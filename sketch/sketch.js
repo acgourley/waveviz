@@ -1,11 +1,11 @@
 var mic, fft;
 
-var r1 = 1;
-var r2 = 300;
-var b1 = r2;
-var b2 = 2000;
-var g1 = b2;
-var g2 = 20000;
+var rStart = 1; 
+var rEnd = 300;
+var bStart = rEnd;
+var bEnd = 2000;
+var gStart = bEnd;
+var gEnd = 20000;
 
 var visibleMeters = 150;
 var soundMPS = 343;
@@ -62,7 +62,23 @@ function drawLightStrip(colors) {
   }
 }
 
-function drawDebugFreq(spectrum) {
+function drawDebugFreq(spectrum, re, ge, be) {
+  var rStartX = rStart/20000 * window.width;
+  var rEndX = rEnd/20000 * window.width;
+  
+  var gStartX = gStart/20000 * window.width;
+  var gEndX = gEnd/20000 * window.width;
+  
+  var bStartX = bStart/20000 * window.width;
+  var bEndX = bEnd/20000 * window.width;
+  
+  fill(255,0,0,100)
+  rect(rStartX, window.height - re, rEndX-rStartX, window.height)
+  fill(0,255,0,100)
+  rect(gStartX, window.height - ge, gEndX-gStartX, window.height)
+  fill(0,0,255,100)
+  rect(bStartX, window.height - be, bEndX-bStartX, window.height)
+  
   noFill();
   stroke(color(100))
   beginShape();
@@ -81,24 +97,23 @@ function drawDebugColors(spectrum, re, ge, be) {
   
   fill(color(0, 255, 0));
   ellipse(300, 100, ge/2);
-  
 }
 
 function draw() {
    
   var spectrum = fft.analyze();
   
-  var re = fft.getEnergy(1, r2);
-  var ge = fft.getEnergy(g1, g2);
-  var be = fft.getEnergy(b1, b2);
-   
-  background(0)
+  var re = fft.getEnergy(rStart, rEnd);
+  var ge = fft.getEnergy(gStart, gEnd);
+  var be = fft.getEnergy(bStart, bEnd);
   
-  //Propigate soundwave
+  background(0)
+
+  //Propagate soundwave
   lightColors.unshift(color(re*2, ge*2, be*2))
   while(lightColors.length > numLights) lightColors.pop()
   
   drawLightStrip(lightColors)
-  drawDebugFreq(spectrum);
-  drawDebugColors(spectrum, re, ge, be);
+  drawDebugFreq(spectrum, re, ge, be);
+  //drawDebugColors(spectrum, re, ge, be);
 }
